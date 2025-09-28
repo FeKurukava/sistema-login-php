@@ -2,11 +2,12 @@
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
-    header("Location: index.php");
+    header("Location: login.php");
     exit;
 }
 
-include("produtos.php");
+
+include __DIR__ . "/sessoes/produtos.php";
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -14,7 +15,6 @@ include("produtos.php");
   <meta charset="UTF-8">
   <title>Maria Pink</title>
   <style>
-  
 * {
   margin: 0;
   padding: 0;
@@ -27,7 +27,6 @@ body {
   color: #333;
   line-height: 1.6;
 }
-
 
 header {
   background: #ffe1e7;
@@ -56,7 +55,6 @@ header nav a:hover {
   color: #9e1f4d;
 }
 
-
 .container {
   max-width: 960px;
   margin: 40px auto;
@@ -68,7 +66,6 @@ h1 {
   color: #d6336c;
   text-align: center;
 }
-
 
 .produtos-grid {
   display: grid;
@@ -112,7 +109,6 @@ h1 {
   margin-bottom: 15px;
 }
 
-
 .produto-card button {
   background: #d6336c;
   color: white;
@@ -141,8 +137,8 @@ footer {
   <header>
     <div class="logo">Maria Pink</div>
     <nav>
-      <a href="produtos.php">Produtos</a>
-      <a href="carrinho.php">Carrinho</a>
+      <a href="sessoes/produtos.php">Produtos</a>
+      <a href="sessoes/carrinho.php">Carrinho</a>
       <a href="logout.php">Sair</a>
     </nav>
   </header>
@@ -152,11 +148,11 @@ footer {
     <div class="produtos-grid">
       <?php foreach ($produtos as $id => $p): ?>
         <div class="produto-card">
-          <img src="img/<?php echo strtolower(str_replace(' ', '-', $p['nome'])); ?>.jpg" alt="<?php echo $p['nome']; ?>">
+          <img src="<?php echo $p['imagem']; ?>" alt="<?php echo $p['nome']; ?>">
           <div class="info">
             <h3><?php echo $p['nome']; ?></h3>
             <p>Preço: R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?></p>
-            <form method="post" action="carrinho.php">
+            <form method="post" action="sessoes/carrinho.php">
               <input type="hidden" name="produto_id" value="<?php echo $id; ?>">
               <button type="submit">Adicionar ao carrinho</button>
             </form>

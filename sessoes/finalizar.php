@@ -4,44 +4,21 @@ session_start();
 
 include __DIR__ . "/produtos.php";
 
-
 if (!isset($_SESSION['carrinho'])) {
     $_SESSION['carrinho'] = [];
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
-    $id = intval($_POST['produto_id']);
-    if (isset($produtos[$id])) {
-        if (!isset($_SESSION['carrinho'][$id])) {
-            $_SESSION['carrinho'][$id] = 1;
-        } else {
-            $_SESSION['carrinho'][$id]++;
-        }
-    }
-    header("Location: carrinho.php");
-    exit;
-}
-
-
-if (isset($_GET['remover'])) {
-    $id = intval($_GET['remover']);
-    unset($_SESSION['carrinho'][$id]);
-    header("Location: carrinho.php");
-    exit;
-}
-
-if (isset($_GET['limpar'])) {
-    $_SESSION['carrinho'] = [];
-    header("Location: carrinho.php");
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar'])) {
+    $_SESSION['carrinho'] = []; 
+    $mensagem = "Compra concluída com sucesso! Obrigado pela preferência 💖";
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Carrinho - Maria Pink</title>
+  <title>Finalizar Compra - Maria Pink</title>
   <style>
 body {
   font-family: Arial, sans-serif;
@@ -118,22 +95,26 @@ button, .btn {
   background: #d6336c;
   color: white;
   border: none;
-  padding: 8px 14px;
+  padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 button:hover, .btn:hover {
   background: #9e1f4d;
 }
 
-.acoes {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
+.mensagem {
+  text-align: center;
+  padding: 20px;
+  background: #e6ffe6;
+  color: #008000;
+  border: 1px solid #b3ffb3;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: bold;
 }
   </style>
 </head>
@@ -148,11 +129,14 @@ button:hover, .btn:hover {
   </header>
 
   <div class="container">
-    <h1>Seu Carrinho</h1>
+    <h1>Finalizar Compra</h1>
 
-    <?php if (empty($_SESSION['carrinho'])): ?>
+    <?php if (isset($mensagem)): ?>
+      <div class="mensagem"><?php echo $mensagem; ?></div>
+      <p style="text-align:center;"><a href="../menu.php" class="btn">Voltar às compras</a></p>
+    <?php elseif (empty($_SESSION['carrinho'])): ?>
       <p style="text-align:center;">Seu carrinho está vazio.</p>
-      <p style="text-align:center;"><a href="../menu.php" class="btn">Continuar comprando</a></p>
+      <p style="text-align:center;"><a href="../menu.php" class="btn">Voltar às compras</a></p>
     <?php else: ?>
       <table>
         <tr>
@@ -161,7 +145,6 @@ button:hover, .btn:hover {
           <th>Preço</th>
           <th>Quantidade</th>
           <th>Subtotal</th>
-          <th>Ações</th>
         </tr>
         <?php
         $total = 0;
@@ -176,19 +159,17 @@ button:hover, .btn:hover {
           <td>R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?></td>
           <td><?php echo $qtd; ?></td>
           <td>R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></td>
-          <td><a href="carrinho.php?remover=<?php echo $id; ?>" class="btn">Remover</a></td>
         </tr>
         <?php endforeach; ?>
         <tr>
           <th colspan="4" style="text-align:right;">Total:</th>
-          <th colspan="2">R$ <?php echo number_format($total, 2, ',', '.'); ?></th>
+          <th>R$ <?php echo number_format($total, 2, ',', '.'); ?></th>
         </tr>
       </table>
-      <div class="acoes">
-        <a href="carrinho.php?limpar=1" class="btn">Limpar Carrinho</a>
-        <a href="finalizar.php" class="btn">Finalizar Compra</a>
-        <a href="../menu.php" class="btn">Continuar Comprando</a>
-      </div>
+
+      <form method="post" style="text-align:center;">
+        <button type="submit" name="confirmar">Confirmar Compra</button>
+      </form>
     <?php endif; ?>
   </div>
 </body>
